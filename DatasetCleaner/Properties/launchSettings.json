@@ -2,7 +2,7 @@
   "profiles": {
     "data-cleaner": {
       "commandName": "Project",
-      "commandLineArgs": "--mode=\"generate-valid-venues\" --path=\"C:\\Users\\efeal\\source\\repos\\Tesis\\data\\test\""
+      "commandLineArgs": "--mode=\"validate-papers\" --path=\"C:\\Users\\efeal\\source\\repos\\Tesis\\data\\test\""
     }
   }
 }

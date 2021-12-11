@@ -13,7 +13,7 @@ public class PaperValidator : AbstractValidator<Paper>
         RuleFor(p => p.keywords).NotNull();
         RuleFor(p => p.Abstract).NotEmpty();
         RuleFor(p => p.lang).Equal("en");
-        RuleFor(p => p.venue).NotNull().Must(v => IsValidVenue(v.id));
+        RuleFor(p => p.venue).NotNull().Must(v => v is not null && v.id is not null && IsValidVenue(v.id));
         RuleFor(p => p.url).NotEmpty().Must(u => u?.Any(x => IsValidURL(x)) ?? false);
     }
 
