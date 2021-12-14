@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "data-cleaner": {
+      "commandName": "Project",
+      "commandLineArgs": "--mode=\"import-paper\" --path=\"C:\\Users\\efeal\\Downloads\\Results-20211214T145520Z-001\\Results\\papers-results13.json\""
+    }
+  }
+}

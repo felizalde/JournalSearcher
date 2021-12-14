@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Website</name>
+    </assembly>
+    <members>
+        <member name="T:Website.Data.ApplicationDbContext">
+            <summary>
+            NOTE: this is only used for creating the Identity AspNet** tables -WE ARE NOT USING EF ON DATA ACCESS-
+            </summary>
+        </member>
+        <member name="P:Website.Models.AppSettings.JWTSecret">
+            <summary>
+            Secret string used to encript JWT signature
+            </summary>
+        </member>
+        <member name="M:Website.Utils.Account.JWTTokenConfiguration.GetJWTTokenValidationParameters">
+            <summary>
+            Gets the token default security parameters
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Website.Utils.Account.JWTTokenConfiguration.IsValidToken(System.String)">
+            <summary>
+            Validates a user token
+            </summary>
+            <param name="token"></param>
+            <returns>True is the token is valid</returns>
+        </member>
+        <member name="T:Website.Utils.ControllerExtensionMethods">
+            <summary>
+            Extension methods to handle common controller objects 
+            </summary>
+        </member>
+    </members>
+</doc>
