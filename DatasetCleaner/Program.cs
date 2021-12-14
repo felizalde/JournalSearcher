@@ -122,11 +122,23 @@ void GenerateValidVenues(string path)
 
 void ImportPaperFile(string json)
 {
-    var papers = JsonConvert.DeserializeObject<PaperInfo[]>(json);
+
+    var content = File.ReadAllText(json);
+    var papers = JsonConvert.DeserializeObject<Paper[]>(content);
 
     var db = new JournalsRecommenderData(configuration);
-
-    db.InsertBulkPaper(papers);
+    var papersInfo = papers.Select(p => 
+                        new PaperInfo(
+                            p.id,
+                            p.title, 
+                            p.venue.id, 
+                            p.year, 
+                            string.Join(",", p.keywords),
+                            p.Abstract,
+                            string.Join(",", p.url),
+                            p.lang,
+                            "aminer")).ToList();
+    db.InsertBulkPaper(papersInfo);
 }
 
 

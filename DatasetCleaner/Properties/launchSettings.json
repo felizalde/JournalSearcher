@@ -2,7 +2,7 @@
   "profiles": {
     "data-cleaner": {
       "commandName": "Project",
-      "commandLineArgs": "--mode=\"validate-papers\" --path=\"C:\\Users\\efeal\\source\\repos\\Tesis\\data\\test\""
+      "commandLineArgs": "--mode=\"import-paper\" --path=\"C:\\Users\\efeal\\Downloads\\Results-20211214T145520Z-001\\Results\\papers-results13.json\""
     }
   }
 }

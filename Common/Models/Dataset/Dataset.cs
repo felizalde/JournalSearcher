@@ -12,7 +12,7 @@ public record VenueInfo(
 public record PaperInfo(
         [PgName("id")] string Id,
         [PgName("title")] string Title,
-        [PgName("venue_id")] string id,
+        [PgName("venue_id")] string venue_id,
         [PgName("year")] int Year,
         [PgName("keywords")] string Keywords,
         [PgName("abstract")] string Abstract,
