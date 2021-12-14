@@ -126,20 +126,33 @@ public class SpringerScraper : Scraper
 
         var metrics_list = metrics.NextElementSibling.QuerySelectorAll("p");
 
-
+        //TODO: reduce complexity of code. very hard to read
         foreach (var metric in metrics_list)
         {
-            Console.WriteLine(metric.TextContent);
-            //TODO:
-            //var metric_value = metric.TextContent.Trim();
-            //var metric_name = metric.NextElementSibling?.TextContent.Trim();
-            //metric_value = metric_value.Replace("(2020)", "").Replace("days", "").Trim();
-            //journal.Metrics.Add(new() { Name = metric_name, Value = ScraperUtils.ParseDouble(metric_value, 0) });
-
-            //if (metric_name.ToLower() == "impact factor")
-            //{
-            //    journal.ImpactFactor = ScraperUtils.ParseDouble(metric_value, 0);
-            //}
+            var title = metric.QuerySelector("strong")?.TextContent.Trim();
+            if (title == null) continue;
+            metric.QuerySelector("strong").Remove();
+            foreach (var m in metric.QuerySelectorAll("br"))
+            {
+                if (title.Equals("Speed", StringComparison.OrdinalIgnoreCase))
+                {
+                    var data = m.NextSibling?.TextContent.Trim();
+                    if (data == null) continue;
+                    var values = data.Split(" ");
+                    journal.Metrics.Add(new() { Name = string.Join(" ", values.Skip(1)), Value = ScraperUtils.ParseDouble(values[0], 0) });
+                }
+                else
+                {
+                    if (title.Equals("Citation Impact", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var value = m.NextSibling?.TextContent.Trim();
+                        var data = m.NextElementSibling?.TextContent.Trim();
+                        if (data == null || value == null) continue;
+                        value = value.Replace(" ", "").Replace("-", "");
+                        journal.Metrics.Add(new() { Name = data, Value = ScraperUtils.ParseDouble(value, 0) });
+                    }
+                }
+            }
         }
     }
 

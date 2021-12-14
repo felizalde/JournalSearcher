@@ -22,7 +22,7 @@ public abstract class Scraper
     {
         return await browser.OpenAsync(journal.Url);
     }
-    
+
     /// <summary>
     /// Parse the list of journals and return them as a list of Journal objects with only title, url and imgUrl
     /// </summary>
@@ -43,18 +43,18 @@ public abstract class Scraper
             tasks.Add(GetDetailPage(journal));
             return tasks;
         }));
-    
+
     /// <summary>
     /// Read all journals from the editorial website and return them as a list of Journal objects with full information
     /// </summary>
-    public async Task<ISet<Journal>> Run() 
+    public async Task<ISet<Journal>> Run()
     {
         var journals = await GetListOfJouranls();
         var pages = await DownloadDetailPages(journals);
 
         foreach(var page in pages)
         {
-            var journal = journals.First(j => editorial.IsJournalPage(j, page.Url));
+            var journal = journals.FirstOrDefault(j => editorial.IsJournalPage(j, page.Url));
             if (journal != null)
             {
                 await FillJournalDetails(journal, page);
