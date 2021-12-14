@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Common.Models;
 
 namespace Common;
@@ -52,12 +53,25 @@ public class SpringerEditorial : IEditorial
         return $"{BaseUrl}search/page/{page}?facet-discipline=%22Computer+Science%22&facet-content-type=%22Journal%22";
     }
 
+    private Dictionary<string, string> _journalToUrl = new Dictionary<string, string>()
+    {
+        {"Applied Network Science", "https://appliednetsci.springeropen.com/"},
+        {"Journal of the Brazilian Computer Society", "https://journal-bcs.springeropen.com/"},
+        {"International Journal of Educational Technology in Higher Education", "https://educationaltechnologyjournal.springeropen.com/"},
+        {"Journal of Internet Services and Applications", "https://jisajournal.springeropen.com/"},
+        {"Visual Computing for Industry, Biomedicine, and Art", "https://vciba.springeropen.com/"}
+    };
+
     public bool IsJournalPage(Journal journal, string url)
     {
         if (journal.Url == url) return true;
         if (url.EndsWith("/" + journal.OriginalID)) return true;
         var subdomain = journal.Title.Replace(" ", string.Empty).ToLower();
         if (url.Contains(subdomain)) return true;
+        if (_journalToUrl.ContainsKey(journal.Title))
+        {
+            if (_journalToUrl[journal.Title] == url) return true;
+        }
 
         return false;
     }
