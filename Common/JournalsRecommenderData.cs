@@ -6,6 +6,7 @@ using System;
 using Z.Dapper.Plus;
 using Dapper;
 using Common.Models.Dataset;
+using System.Linq;
 
 namespace Common;
 
@@ -68,10 +69,26 @@ public class JournalsRecommenderData
     {
         try
         {
+            var mapped = new Dictionary<Guid, Journal>();
 
             var conn = Connection;
-            var journals = conn.Query<Journal>("SELECT * FROM journal WHERE version = @version", new { version });
-
+            var journals = conn.Query<Journal, JournalMetric, Journal>(@"SELECT * FROM journal 
+                                                     LEFT JOIN journal_metrics on journal.id = journal_metrics.journalid
+                                                     WHERE version = @version", (journal, metric) =>
+                                                                       {
+                                                                           if (!mapped.TryGetValue(journal.Id, out Journal toMap))
+                                                                           {
+                                                                               toMap = journal;
+                                                                               toMap.Metrics = new();
+                                                                               mapped.Add(journal.Id, toMap);
+                                                                           }
+                                                                           if (metric is { Value: > 0})
+                                                                           {
+                                                                                toMap.Metrics.Add(metric);
+                                                                           }
+                                                                           return toMap;
+                                                                       }, new { version }).Distinct();
+                                                      
             return journals;
         }
         catch (Exception ex)
