@@ -111,6 +111,7 @@ public abstract class ElasticBaseRepository<T> : IElasticBaseRepository<T> where
             await _elasticClient.Indices.CreateAsync(IndexName, c =>
             {
                 c.Settings(s => s
+                    .NumberOfReplicas(0)
                     .Analysis(a => a
                     .Analyzers(an => an
                         .Custom("journals", ca => ca
@@ -120,7 +121,7 @@ public abstract class ElasticBaseRepository<T> : IElasticBaseRepository<T> where
                             )
                         )
                     )
-                ).Map<T>(p => p.AutoMap());
+                ).Map<T>(p => p.AutoMap());          
                 return c;
             });
         }

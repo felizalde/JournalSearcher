@@ -1,10 +1,10 @@
+using Common;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SearchEngine.Interfaces;
 using Website.Models.Search;
 using Website.Utils.Account;
-using SearchEngine.Interfaces;
-using Common;
 
 namespace Website.Controllers;
 
@@ -42,7 +42,7 @@ public class SearchController : ControllerBase
     [Authorize(Roles = ApplicationRoles.ADMIN)]
     public async Task<IActionResult> PostSampleData([FromQuery] int version)
     {
-        await searcher.CleanIndexAsync();
+        //await searcher.CleanIndexAsync();
 
         var journals = data.GetAllJournals(version);
 

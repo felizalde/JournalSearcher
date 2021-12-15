@@ -4,16 +4,14 @@ namespace SearchEngine.Indices;
 
 public class JournalDocument : BaseIndex
 {
-    [Text(Name = "title", Analyzer = "journals", Boost = 2)]
     public string? Title { get; set; }
-    [Text(Name = "about", Analyzer = "journals", Boost = 1.5)]
     public string? About { get; set; }
-    [Text(Name = "aims_and_scope", Analyzer = "journals", Boost = 1.75)]
     public string? AimsAndScope { get; set; }
     public string? Url { get; set; }
     public string? ImgUrl { get; set; }
     public string? Editorial { get; set; }
     public double? ImpactFactor { get; set; }
+    public List<JournalMetricDocument> Metrics { get; set; }
 }
 
 public class JournalDocumentBM25 : JournalDocument
@@ -38,4 +36,18 @@ public class JournalDocumentClassic : JournalDocument
 
     [Text(Name = "aims_and_scope", Analyzer = "journals", Boost = 1.75, Similarity = "classic")]
     public new string? AimsAndScope { get; set; }
+
+}
+
+
+public class JournalMetricDocument : BaseIndex
+{
+    [Text(Name = "journalid", Index = false)]
+    public string JournalId { get; set; }
+    
+    [Text(Name = "metric_name", Index = false)]
+    public string Name { get; set; }
+
+    [Text(Name = "metric_value", Index = false)]
+    public double Value { get; set; }
 }

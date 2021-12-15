@@ -15,11 +15,9 @@ public class JournalSearcher : IJournalSearcher
     {
         this.repository = repository;
     }
-
-
     public async Task InsertManyAsync(IEnumerable<Journal> journals)
     {
-        var documents = journals.Select(x => new JournalDocument
+        var documents = (journals.Select(x => new JournalDocumentBM25
         {
             Id = x.Id.ToString(),
             Title = x.Title,
@@ -28,8 +26,15 @@ public class JournalSearcher : IJournalSearcher
             Editorial = x.Editorial,
             Url = x.Url,
             ImgUrl = x.ImgUrl,
-            ImpactFactor = x.ImpactFactor
-        }).ToList();
+            ImpactFactor = x.ImpactFactor,
+            Metrics =  x.Metrics?.Select(y => 
+                                    new JournalMetricDocument() { 
+                                        Id = y.Id.ToString(), 
+                                        JournalId = x.Id.ToString(), 
+                                        Name = y.Name, 
+                                        Value = y.Value
+                                    }).ToList() ?? new()
+        }) as IEnumerable<JournalDocument>).ToList();
 
         await repository.InsertManyAsync(documents);
     }

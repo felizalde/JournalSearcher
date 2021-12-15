@@ -5,11 +5,10 @@ using SearchEngine.Interfaces;
 
 namespace SearchEngine.Repositories;
 
-public interface IJournalsRepository : IElasticBaseRepository<JournalDocument> { }
 
-public class JournalsRepository: ElasticBaseRepository<JournalDocument>, IJournalsRepository
+public class ClassicJournalsRepository: ElasticBaseRepository<JournalDocument>, IJournalsRepository
 {
-    public JournalsRepository(IElasticClient elasticClient): base(elasticClient)
+    public ClassicJournalsRepository(IElasticClient elasticClient): base(elasticClient)
     {
     }
 
@@ -17,9 +16,9 @@ public class JournalsRepository: ElasticBaseRepository<JournalDocument>, IJourna
 }
 
 
-public class JournalsBM25Repository : ElasticBaseRepository<JournalDocument>, IJournalsRepository
+public class BM25JournalsRepository : ElasticBaseRepository<JournalDocument>, IJournalsRepository
 {
-    public JournalsBM25Repository(IElasticClient elasticClient) : base(elasticClient)
+    public BM25JournalsRepository(IElasticClient elasticClient) : base(elasticClient)
     {
     }
 

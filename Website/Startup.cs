@@ -92,7 +92,7 @@ public class Startup
         //Inject Search Dependencies
         services.AddElasticsearch(Configuration);
         services.AddTransient<IJournalSearcher, JournalSearcher>();
-        services.AddTransient<IJournalsRepository, JournalsRepository>();
+        services.AddTransient<IJournalsRepository, BM25JournalsRepository>();
 
         // In production, the Vue files will be served from this directory
         services.AddSpaStaticFiles(configuration =>
