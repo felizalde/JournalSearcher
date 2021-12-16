@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
-		<TypeScriptCompileBlocked>false</TypeScriptCompileBlocked>
+		<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
 		<TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
 		<NoWarn>CS1591,1591</NoWarn>
 
