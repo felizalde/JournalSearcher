@@ -1,8 +1,13 @@
 export interface ISearchState {
-    journals: IJournal[];
+    journals: IResult[];
     selectedJournal: IJournal;
     isLoading: boolean;
     error: string;
+}
+
+export interface IResult {
+    document: IJournal;
+    score: number;
 }
 
 export interface IJournal {

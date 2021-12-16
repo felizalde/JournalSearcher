@@ -29,6 +29,7 @@ public class SearchController : ControllerBase
         //TODO: Improve search
         var term = $"{search.Title} {search.Abstract} {string.Join(" ", search.Keywords)}";
         var result = await searcher.GetJournalsAllCondition(term,search.ImpactFactor.Max, search.ImpactFactor.Min);
+        //TODO: paginate need to be handle in frontend, here it will return all journals
         return new SearchResult()
         {
             Total = result.Count(),

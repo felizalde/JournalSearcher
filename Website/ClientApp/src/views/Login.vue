@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
-import { ElLoading } from "element-plus";
+import { ElLoading, ElMessage } from "element-plus";
 import useAuthentication from "@/uses/useAuthentication";
 import { useRouter } from "vue-router";
 
@@ -91,9 +91,19 @@ export default defineComponent({
         const success = await authenticate(model);
         if (success) {
           router.push({ name: "Home" });
+        } else {
+          ElMessage({
+            showClose: true,
+            message: "Username or password is incorrect",
+            type: "error",
+          });
         }
       } catch (error) {
-        console.log(error);
+        ElMessage({
+            showClose: true,
+            message: "Username or password is incorrect",
+            type: "error",
+          });
       } finally {
         loadingInstance.close();
       }
