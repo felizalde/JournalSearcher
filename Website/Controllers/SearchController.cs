@@ -53,25 +53,4 @@ public class SearchController : ControllerBase
         };
     }
 
-    [HttpPost("fill-index")]
-    [Authorize(Roles = ApplicationRoles.ADMIN)]
-    public async Task<IActionResult> FillIndex([FromQuery] int version)
-    {
-        //await searcher.CleanIndexAsync();
-
-        var journals = data.GetAllJournals(version);
-
-        await searcher.InsertManyAsync(journals);
-
-        return Ok(new { Result = "Data successfully registered with Elasticsearch" });
-    }
-
-    [HttpPost("create-index")]
-    [Authorize(Roles = ApplicationRoles.ADMIN)]
-    public async Task<IActionResult> CreateIndex()
-    {
-        await searcher.CreateIndexAsync();
-
-        return Ok(new { Result = "Index created sucessfully." });
-    }
 }
