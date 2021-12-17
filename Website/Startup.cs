@@ -16,6 +16,7 @@ using SearchEngine.Interfaces;
 using SearchEngine.Repositories;
 using Website.Utils;
 using Common;
+using SearchEngine.Indices;
 
 namespace Website;
 
@@ -91,8 +92,8 @@ public class Startup
 
         //Inject Search Dependencies
         services.AddElasticsearch(Configuration);
-        services.AddTransient<IJournalSearcher, JournalSearcher>();
-        services.AddTransient<IJournalsRepository, BM25JournalsRepository>();
+        services.AddTransient<IJournalSearcher<JournalDocument>, JournalSearcher>();
+        services.AddTransient<IJournalsRepository<JournalDocument>, JournalsRepository>();
 
         // In production, the Vue files will be served from this directory
         services.AddSpaStaticFiles(configuration =>

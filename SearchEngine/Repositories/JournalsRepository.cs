@@ -6,22 +6,13 @@ using SearchEngine.Interfaces;
 namespace SearchEngine.Repositories;
 
 
-public class ClassicJournalsRepository: ElasticBaseRepository<JournalDocument>, IJournalsRepository
+public class JournalsRepository: ElasticBaseRepository<JournalDocument>, IJournalsRepository<JournalDocument>
 {
-    public ClassicJournalsRepository(IElasticClient elasticClient): base(elasticClient)
+    public JournalsRepository(IElasticClient elasticClient): base(elasticClient)
     {
     }
 
-    public override string IndexName => IndexMapping.GetIndexName(typeof(JournalDocumentClassic));
+    public override string IndexName => "journals-index";
 }
 
-
-public class BM25JournalsRepository : ElasticBaseRepository<JournalDocument>, IJournalsRepository
-{
-    public BM25JournalsRepository(IElasticClient elasticClient) : base(elasticClient)
-    {
-    }
-
-    public override string IndexName => IndexMapping.GetIndexName(typeof(JournalDocumentBM25));
-}
 

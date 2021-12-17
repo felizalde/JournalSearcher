@@ -4,11 +4,12 @@ using SearchEngine.Indices;
 namespace SearchEngine.Interfaces;
 
 
-public interface IJournalSearcher
+public interface IJournalSearcher<T> where T : BaseIndex 
 {
-    Task InsertManyAsync(IEnumerable<Journal> journals);
+    Task InsertManyAsync(IEnumerable<Journal> journals);    
+    Task CreateIndexAsync();
     Task CleanIndexAsync();
-    Task<ICollection<JournalDocument>> GetAllAsync();
-    Task<ICollection<JournalResult<JournalDocument>>> SearchInAllFiels(string term);
-    Task<ICollection<JournalResult<JournalDocument>>> GetJournalsAllCondition(string term, double impactFactorMax, double impactFactorMin);
+    Task<ICollection<T>> GetAllAsync();
+    Task<ICollection<JournalResult<T>>> SearchInAllFiels(string term);
+    Task<ICollection<JournalResult<T>>> GetJournalsAllCondition(string title, string _abstract, string keywords);
 }

@@ -2,6 +2,7 @@ using Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SearchEngine.Indices;
 using SearchEngine.Interfaces;
 using Website.Models.Search;
 using Website.Utils.Account;
@@ -13,10 +14,10 @@ namespace Website.Controllers;
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class SearchController : ControllerBase
 {
-    private readonly IJournalSearcher searcher;
+    private readonly IJournalSearcher<JournalDocument> searcher;
     private readonly JournalsRecommenderData data;
 
-    public SearchController(IJournalSearcher searcher, JournalsRecommenderData data)
+    public SearchController(IJournalSearcher<JournalDocument> searcher, JournalsRecommenderData data)
     {
         this.searcher = searcher;
         this.data = data;
@@ -24,13 +25,11 @@ public class SearchController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = ApplicationRoles.ALL)]
-    public async Task<SearchResult> Search([FromBody] SearchRequest search)
+    public async Task<SearchResult<JournalDocument>> Search([FromBody] SearchRequest search)
     {
-        //TODO: Improve search
-        var term = $"{search.Title} {search.Abstract} {string.Join(" ", search.Keywords)}";
-        var result = await searcher.GetJournalsAllCondition(term,search.ImpactFactor.Max, search.ImpactFactor.Min);
+        var result = await searcher.GetJournalsAllCondition(search.Title, search.Abstract, string.Join(",", search.Keywords));
         //TODO: paginate need to be handle in frontend, here it will return all journals
-        return new SearchResult()
+        return new SearchResult<JournalDocument>()
         {
             Total = result.Count(),
             Page = 1,
@@ -39,9 +38,24 @@ public class SearchController : ControllerBase
         };
     }
 
-    [HttpPost("generate-index")]
+    [HttpPost("get-all")]
+    [Authorize(Roles = ApplicationRoles.ALL)]
+    public async Task<SearchResult<JournalDocument>> SearchAll()
+    {
+        var result = await searcher.GetAllAsync();
+        //TODO: paginate need to be handle in frontend, here it will return all journals
+        return new SearchResult<JournalDocument>()
+        {
+            Total = result.Count(),
+            Page = 1,
+            Size = 20,
+            Items = result.Select(x => new JournalResult<JournalDocument>(x)).ToList()
+        };
+    }
+
+    [HttpPost("fill-index")]
     [Authorize(Roles = ApplicationRoles.ADMIN)]
-    public async Task<IActionResult> PostSampleData([FromQuery] int version)
+    public async Task<IActionResult> FillIndex([FromQuery] int version)
     {
         //await searcher.CleanIndexAsync();
 
@@ -50,5 +64,14 @@ public class SearchController : ControllerBase
         await searcher.InsertManyAsync(journals);
 
         return Ok(new { Result = "Data successfully registered with Elasticsearch" });
+    }
+
+    [HttpPost("create-index")]
+    [Authorize(Roles = ApplicationRoles.ADMIN)]
+    public async Task<IActionResult> CreateIndex()
+    {
+        await searcher.CreateIndexAsync();
+
+        return Ok(new { Result = "Index created sucessfully." });
     }
 }

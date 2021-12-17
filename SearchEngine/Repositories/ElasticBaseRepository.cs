@@ -1,8 +1,6 @@
 ﻿using Nest;
-using SearchEngine.Abstractions;
 using SearchEngine.Indices;
 using SearchEngine.Interfaces;
-using System.Linq;
 
 namespace SearchEngine.Repositories;
 
@@ -108,22 +106,25 @@ public abstract class ElasticBaseRepository<T> : IElasticBaseRepository<T> where
     {
         if (!(await _elasticClient.Indices.ExistsAsync(IndexName)).Exists)
         {
-            await _elasticClient.Indices.CreateAsync(IndexName, c =>
+            var response = await _elasticClient.Indices.CreateAsync(IndexName, c =>
             {
                 c.Settings(s => s
                     .NumberOfReplicas(0)
                     .Analysis(a => a
-                    .Analyzers(an => an
-                        .Custom("journals", ca => ca
-                            .CharFilters("html_strip")
-                            .Tokenizer("standard")
-                            .Filters("lowercase", "stop")
+                        .Analyzers(an => an
+                            .Custom("journals", ca => ca
+                                .CharFilters("html_strip")
+                                .Tokenizer("standard")
+                                .Filters("lowercase", "stop")
+                                )
                             )
                         )
-                    )
-                ).Map<T>(p => p.AutoMap());          
+                    ).Map<T>(p => p.AutoMap());          
                 return c;
             });
+
+            if (!response.IsValid)
+                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
         }
         return true;
     }
