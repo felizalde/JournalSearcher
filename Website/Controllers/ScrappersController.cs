@@ -38,8 +38,6 @@ public class ScrappersController : ControllerBase
         data.InsertBulkJournals(journals_version);
     }
 
-    
-    // GET: api/<WileyRunnerController>
     [HttpGet, Route("wiley")]
     [Authorize(Roles = ApplicationRoles.ADMIN)]
     public async Task<IEnumerable<Journal>> RunWileyScrapper([FromServices] WileyScraper scraper, int version)
