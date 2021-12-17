@@ -17,25 +17,25 @@
         </div>
         <div class="result-item-metrics">
           <div class="score-container">
-            <div class="score-container-text">
-              <span class="score-container-text-text">Score: </span>
+            <div class="score-container-tex text-centert">
+              <h6 class="score-container-text-text">Score</h6>
               <span class="score-container-text-score">{{ result.score }}</span>
             </div>
             <el-divider direction="vertical"></el-divider>
             <div
               class="journal-metrics-container"
-              v-if="result.document.metrics"
+              v-if="filteredMetrics"
             >
               <div
                 class="journal-metrics-container-text"
-                v-for="m in result.document.metrics"
+                v-for="m in filteredMetrics"
                 :key="m.id"
               >
-                <span class="journal-metrics-container-text-text">{{
-                  m.name
-                }}: </span>
+                <h6 class="journal-metrics-container-text-text">{{
+                  capitalize(m.name)
+                }}</h6>
                 <span class="journal-metrics-container-text-score">{{
-                  m.value
+                  format(m.name, m.value)
                 }}</span>
               </div>
             </div>
@@ -49,6 +49,9 @@
 import { defineComponent, PropType } from "vue";
 import { IResult } from "@/interfaces/Search";
 import EditorialLogo from "./EditorialLogo.vue";
+import { FormatMetricValue, 
+    FilterMetricsToShow, 
+    CapitalizeFirstLetterOfEachWord } from "@/utils/MetricsHelper";
 
 export default defineComponent({
   components: {
@@ -60,6 +63,15 @@ export default defineComponent({
       required: true,
     },
   },
+  setup(props) {
+    const format = (metric: string, value: number) => FormatMetricValue(metric, value);
+    const capitalize = (str: string) => CapitalizeFirstLetterOfEachWord(str);
+    return {
+      filteredMetrics: FilterMetricsToShow(props.result.document.metrics),
+      format,
+      capitalize
+    }
+  },
 });
 </script>
 
@@ -70,10 +82,6 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-.result-item-header {
-  height: 70px;
 }
 
 .result-item-header-title {
@@ -119,6 +127,8 @@ export default defineComponent({
   width: auto;
   height: auto;
   max-height: 150px;
+  min-width: 115px;
+  max-width: 115px;
 }
 
 .result-item-content-text {
@@ -128,5 +138,46 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-content: space-between;
+}
+
+.score-container {
+  display: flex;
+  flex-direction: row;
+  column-gap: 15px;
+  height: 80%;
+  padding: 0 2rem;
+}
+
+.score-container-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.score-container .el-divider {
+  height: 100%;
+  margin: 0;
+}
+
+.score-container h6 {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.score-container span {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.journal-metrics-container-text {
+  width: 300px;
+  text-align: center;
+}
+
+.journal-metrics-container {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: space-between;
 }
 </style>
