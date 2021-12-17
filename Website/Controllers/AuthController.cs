@@ -38,14 +38,6 @@ public class AuthController : ControllerBase
         return Ok(new AuthResponse(user.Email, user.FirstName, user.LastName, token));
     }
 
-    [AllowAnonymous]
-    [HttpGet, Route("test-anonymous")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult TestAnon()
-    {
-        return Ok("Anonymous access worked!");
-    }
-
 
     [HttpGet, Route("test-auth")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -57,6 +49,7 @@ public class AuthController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost, Route("create-test-users")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<IActionResult> CreateMockUsers()
     {
         await _userService.CreateMockUsers();
