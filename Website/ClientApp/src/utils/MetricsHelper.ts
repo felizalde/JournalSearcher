@@ -34,6 +34,12 @@ export function CapitalizeFirstLetterOfEachWord(string: string){
 }
 
 export function FilterMetricsToShow(metrics: IMetric[]): IMetric[] {
-    return metrics.filter(m => !INVALID_METRICS.includes(m.name))
-                                     .filter(m => m.value > 0);
+    return metrics
+                //Remove duplicated
+                .filter((metric, index, self) => 
+                            index === self.findIndex((n) => (n.name.toUpperCase() === metric.name.toUpperCase())))
+                // Remove metrics not valid to show
+                .filter(m => !INVALID_METRICS.includes(m.name))
+                //Remove metrics with value 0
+                .filter(m => m.value > 0);
 }
