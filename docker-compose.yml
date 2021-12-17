@@ -66,11 +66,8 @@ services:
        - elasticsearch
 
   website:
-    container_name: website_container
-    image: website
-    build:
-      context: .
-      dockerfile: Website/Dockerfile
+    container_name: journals-searcher
+    image: colohead3r/journals-searcher:v1-rc02
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
     ports:

@@ -3,22 +3,20 @@ using Nest;
 using SearchEngine.Abstractions;
 using SearchEngine.Indices;
 using SearchEngine.Interfaces;
-using SearchEngine.Repositories;
 
 namespace SearchEngine;
 
-public class JournalSearcher : IJournalSearcher
+public class JournalSearcher : IJournalSearcher<JournalDocument>
 {
-    private readonly IJournalsRepository repository;
+    private readonly IJournalsRepository<JournalDocument> repository;
 
-    public JournalSearcher(IJournalsRepository repository)
+    public JournalSearcher(IJournalsRepository<JournalDocument> repository)
     {
         this.repository = repository;
     }
-
-
     public async Task InsertManyAsync(IEnumerable<Journal> journals)
     {
+
         var documents = journals.Select(x => new JournalDocument
         {
             Id = x.Id.ToString(),
@@ -28,7 +26,14 @@ public class JournalSearcher : IJournalSearcher
             Editorial = x.Editorial,
             Url = x.Url,
             ImgUrl = x.ImgUrl,
-            ImpactFactor = x.ImpactFactor
+            ImpactFactor = x.ImpactFactor,
+            Metrics =  x.Metrics?.Select(y => 
+                                    new JournalMetricDocument() { 
+                                        Id = y.Id.ToString(), 
+                                        JournalId = x.Id.ToString(), 
+                                        Name = y.Name, 
+                                        Value = y.Value
+                                    }).ToList() ?? new()
         }).ToList();
 
         await repository.InsertManyAsync(documents);
@@ -49,20 +54,43 @@ public class JournalSearcher : IJournalSearcher
         return result.ToList();
     }
 
-    public async Task<ICollection<JournalResult<JournalDocument>>> GetJournalsAllCondition(string term, double impactFactorMax, double impactFactorMin)
+    public async Task<ICollection<JournalResult<JournalDocument>>> GetJournalsAllCondition(string title, string _abstract, string keywords)
     {
+
         var query = new QueryContainerDescriptor<JournalDocument>()
-                        .CombinedFields(c =>
-                           c.Fields(f => f.Field(p => p.Title, 3)
-                                                .Field(p => p.AimsAndScope, 2)
-                                                .Field(p => p.About, 1)
-                                                )
-                           .Query(term)
-                           .Operator(Operator.Or)
-                           .ZeroTermsQuery(ZeroTermsQuery.All)
-                           .Name("combined_fields")
-                           .AutoGenerateSynonymsPhraseQuery(true)
+                        .DisMax(d => {
+                            d.TieBreaker(0.7);
+                            d.Queries(dq => 
+                                dq.MultiMatch(m => 
+                                    m.Query(title)
+                                        .Fields(f => 
+                                            f.Field(p => p.Title, 2)
+                                            .Field(p => p.AimsAndScope)
+                                            .Field(p => p.About))
+                                        .Analyzer("journals")
+                                        //.Fuzziness(Fuzziness.Auto)
+                                    //    .ZeroTermsQuery(ZeroTermsQuery.All)
+                                    .Query(_abstract)
+                                        .Fields(f => 
+                                            f.Field(p => p.Title)
+                                            .Field(p => p.AimsAndScope, 1.5)
+                                            .Field(p => p.About))
+                                        .Analyzer("journals")
+                                        //.Fuzziness(Fuzziness.Auto)
+                                    //    .ZeroTermsQuery(ZeroTermsQuery.All)
+                                    // .Query(keywords)
+                                    //     .Fields(f => 
+                                    //         f.Field(p => p.Title, 1.5)
+                                    //         .Field(p => p.AimsAndScope)
+                                    //         .Field(p => p.About))
+                                    //     //.Analyzer("journals")
+                                    //     //.Fuzziness(Fuzziness.Auto)
+                                    //     .ZeroTermsQuery(ZeroTermsQuery.All)
+                                )
+                                
                             );
+                            return d;
+                        });
                         
 
         var result = await repository.SearchAsync(_ => query);
@@ -74,5 +102,10 @@ public class JournalSearcher : IJournalSearcher
     {
         var documents = await repository.GetAllAsync();
         await repository.DeleteAllAsync(documents);
+    }
+
+    public async Task CreateIndexAsync()
+    {
+        await repository.CreateIndexAsync();
     }
 }

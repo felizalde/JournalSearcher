@@ -4,7 +4,7 @@ import { AxiosResponse } from 'axios';
 
 import $http from '../../plugins/axios';
 
-import { IJournal, ISearchState } from '@/interfaces/Search';
+import { IJournal, IResult, ISearchState } from '@/interfaces/Search';
 import { IRootState } from '@/interfaces/RootState';
 
 export default {
@@ -18,13 +18,13 @@ export default {
   },
 
   getters: {
-    getJournals: (state: ISearchState): IJournal[] => state.journals,
+    getJournals: (state: ISearchState): IResult[] => state.journals,
     getSelectedJournal: (state: ISearchState): IJournal => state.selectedJournal,
     getIsLoading: (state: ISearchState): boolean => state.isLoading,
   },
 
   mutations: {
-    SET_JOURNALS(state: ISearchState, payload: IJournal[]): void {
+    SET_JOURNALS(state: ISearchState, payload: IResult[]): void {
       state.journals = payload;
     },
     SET_SELECTED_JOURNAL(state: ISearchState, payload: IJournal): void {
@@ -51,10 +51,10 @@ export default {
           method: 'POST',
           url: `/search`,
           data: payload
-        }) as AxiosResponse<{ total: number, page: number, size: number, items: IJournal[] }, any>;
+        }) as AxiosResponse<{ total: number, page: number, size: number, items: IResult[] }, any>;
 
-        //TODO: Handle pagination
-        const journals: IJournal[] = response.data?.items;
+        //TODO: Make Pagination in front-end
+        const journals: IResult[] = response.data?.items;
         commit('SET_JOURNALS', journals);
 
       } catch (error: any) {

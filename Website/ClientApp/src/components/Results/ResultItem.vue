@@ -1,48 +1,81 @@
 <template>
   <el-card class="result-item m-3">
-
     <div class="result-item-content">
-        <div class="result-item-content-image">
-            <img :src="result.imgUrl" alt="journal image" />
+      <div class="result-item-content-image">
+        <img :src="result.document.imgUrl" alt="journal image" />
+      </div>
+      <div class="result-item-content-text">
+        <div class="result-item-header">
+          <div class="result-item-header-title">
+            <h5 class="result-item-header-title-text">
+              <a :href="result.document.url" target="_blank">{{
+                result.document.title
+              }}</a>
+            </h5>
+            <EditorialLogo :editorial="result.document.editorial" />
+          </div>
         </div>
-        <div class="result-item-content-text">
-            <div class="result-item-header">
-                <div class="result-item-header-title">
-                    <h5 class="result-item-header-title-text">
-                        <a :href="result.url" target="_blank">{{ result.title }}</a>
-                    </h5>
-
-                    
-                    <img v-if="result.editorial === 'Sage'" class="editorial-logo" src="../../assets/sage-logo.png" height="35" width="90" alt="sage-logo" />
-                    <img v-if="result.editorial === 'Springer'" class="editorial-logo" src="../../assets/springer-logo.png" height="45" width="100" alt="springer-logo" />
-                    <img v-if="result.editorial === 'Elsevier'" class="editorial-logo" src="../../assets/elsevier-logo.png" height="45" width="100" alt="elsevier-logo" />
-                    <img v-if="result.editorial === 'Wiley'" class="editorial-logo" src="../../assets/wiley-logo.png" height="45" width="100" alt="wiley-logo" />
-                    <!--<a :href="result.url" target="_blank">Journal website</a>-->
-                </div>
+        <div class="result-item-metrics">
+          <div class="score-container">
+            <div class="score-container-tex text-centert">
+              <h6 class="score-container-text-text">Score</h6>
+              <span class="score-container-text-score">{{ result.score }}</span>
             </div>
-            <div class="result-item-metrics">
+            <el-divider direction="vertical"></el-divider>
+            <div
+              class="journal-metrics-container"
+              v-if="filteredMetrics"
+            >
+              <div
+                class="journal-metrics-container-text"
+                v-for="m in filteredMetrics"
+                :key="m.id"
+              >
+                <h6 class="journal-metrics-container-text-text">{{
+                  capitalize(m.name)
+                }}</h6>
+                <span class="journal-metrics-container-text-score">{{
+                  format(m.name, m.value)
+                }}</span>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-    
   </el-card>
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { IJournal } from "@/interfaces/Search";
+import { IResult } from "@/interfaces/Search";
+import EditorialLogo from "./EditorialLogo.vue";
+import { FormatMetricValue, 
+    FilterMetricsToShow, 
+    CapitalizeFirstLetterOfEachWord } from "@/utils/MetricsHelper";
 
 export default defineComponent({
+  components: {
+    EditorialLogo
+  },
   props: {
     result: {
-      type: Object as PropType<IJournal>,
-      required: true
+      type: Object as PropType<IResult>,
+      required: true,
+    },
+  },
+  setup(props) {
+    const format = (metric: string, value: number) => FormatMetricValue(metric, value);
+    const capitalize = (str: string) => CapitalizeFirstLetterOfEachWord(str);
+    return {
+      filteredMetrics: FilterMetricsToShow(props.result.document.metrics),
+      format,
+      capitalize
     }
-  }
+  },
 });
 </script>
 
-<style scoped>
-
+<style>
 .result-item {
   width: 100%;
   max-height: 300px;
@@ -51,15 +84,11 @@ export default defineComponent({
   justify-content: space-between;
 }
 
-.result-item-header {
-    height: 70px;
-}
-
 .result-item-header-title {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .result-item-header-title-text {
@@ -68,17 +97,17 @@ export default defineComponent({
 }
 
 .result-item-header-title a {
-    margin-left: auto;
-    color: var(--el-text-color-primary);
-    font-weight: bold;
+  margin-left: auto;
+  color: var(--el-text-color-primary);
+  font-weight: bold;
 }
 
 .editorial-logo {
-    float:right;
+  float: right;
 }
 
 .result-item-metrics {
-    height: 100%;
+  height: 100%;
 }
 
 .result-item-content {
@@ -98,6 +127,8 @@ export default defineComponent({
   width: auto;
   height: auto;
   max-height: 150px;
+  min-width: 115px;
+  max-width: 115px;
 }
 
 .result-item-content-text {
@@ -107,9 +138,46 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-content: space-between;
-
 }
 
+.score-container {
+  display: flex;
+  flex-direction: row;
+  column-gap: 15px;
+  height: 80%;
+  padding: 0 2rem;
+}
 
+.score-container-text {
+  display: flex;
+  flex-direction: column;
+}
 
+.score-container .el-divider {
+  height: 100%;
+  margin: 0;
+}
+
+.score-container h6 {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.score-container span {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.journal-metrics-container-text {
+  width: 300px;
+  text-align: center;
+}
+
+.journal-metrics-container {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: space-between;
+}
 </style>

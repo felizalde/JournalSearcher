@@ -18,6 +18,7 @@ WORKDIR /src
 COPY ["Website/Website.csproj", "Website/"]
 COPY ["Scraper/Scraper.csproj", "Scraper/"]
 COPY ["Common/Common.csproj", "Common/"]
+COPY ["SearchEngine/SearchEngine.csproj", "SearchEngine/"]
 RUN dotnet restore "Website/Website.csproj"
 COPY . .
 WORKDIR "/src/Website"
