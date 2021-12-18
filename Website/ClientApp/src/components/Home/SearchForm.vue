@@ -30,9 +30,13 @@
         <el-form-item label="Paper Keywords:" class="form-item" prop="keywords">          
           <InputTag v-model:keywords="model.keywords"/>
         </el-form-item>
-        <el-form-item>
-          <el-button type="text"><em class="fas fa-plus pr-2"></em>Refine your search</el-button>
+        <el-form-item class="mb-0">
+          <el-button type="text" @click="toggleRefine">
+            <em :class="refineIcon"></em>
+            Refine your search
+          </el-button>
         </el-form-item>
+        <RefineSearch v-show="refine" :items="model.setting" />
         <el-form-item>
           <el-button class="float-right mt-4" type="info" native-type="submit"><em class="fas fa-search"></em> Search Journals</el-button>
         </el-form-item>
@@ -41,30 +45,36 @@
   </el-row>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref} from "vue";
+import { defineComponent, reactive, ref, computed} from "vue";
 import { ElLoading } from "element-plus";
-import InputTag  from '../Shared/InputTag.vue'
+import InputTag  from '../Shared/InputTag.vue';
 import useSearch from "@/uses/useSearch";
 import { useRouter } from "vue-router";
+import RefineSearch from './RefineSearch.vue';
+import { RefineInitialValues } from '@/utils/RefineSettings';
+import { IRefineItem } from '@/interfaces/Search';
 
 
 export default defineComponent({
   components: {
-    InputTag
+    InputTag,
+    RefineSearch
   },
   setup() {    
     const { search } = useSearch();    
     const router = useRouter();
+    const refine = ref(false);
+
+    const toggleRefine = () => refine.value = !refine.value;
+
+    const refineIcon = computed(() => refine.value ? 'fas fa-minus pr-2' : 'fas fa-plus pr-2');
 
     const form = ref(null);
     const model = reactive({
       title: "",
       abstract: "",
       keywords: [] as string[],
-      impactFactor: {
-        min: 0,
-        max: 10
-      }
+      setting: RefineInitialValues as IRefineItem[]
     });
 
     const rules = {
@@ -114,7 +124,6 @@ export default defineComponent({
     };
 
     const onKeywordChanged = (newTags: string[]) => {
-      console.log(newTags);
       model.keywords = newTags;
     };
 
@@ -123,7 +132,10 @@ export default defineComponent({
       rules,
       onSubmit,
       onKeywordChanged,
-      form
+      form,
+      refineIcon,
+      refine,
+      toggleRefine
     };
   },
 });
@@ -156,5 +168,4 @@ export default defineComponent({
 .el-button--text span:hover {
   text-decoration: underline;
 }
-
 </style>

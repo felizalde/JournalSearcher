@@ -54,45 +54,53 @@ public class JournalSearcher : IJournalSearcher<JournalDocument>
         return result.ToList();
     }
 
-    public async Task<ICollection<JournalResult<JournalDocument>>> GetJournalsAllCondition(string title, string _abstract, string keywords)
+    private static FieldsDescriptor<JournalDocument> FillFieldsDescriptor(FieldsDescriptor<JournalDocument> descriptor, IEnumerable<RefineField> fields)
     {
+        foreach (var field in fields)
+        {
+            switch (field.Name)
+            {
+                case "Title": descriptor.Field(j => j.Title, field.Boost); break;
+                case "About": descriptor.Field(j => j.About, field.Boost); break;
+                case "Aims and Scope": descriptor.Field(j => j.AimsAndScope, field.Boost); break;
+                case "Keywords": descriptor.Field(j => j.Keywords, field.Boost); break;
+            }
+        }
 
+        return descriptor;
+    }
+
+    private static MultiMatchQueryDescriptor<JournalDocument> FillMultiMatchQueryDescriptor(MultiMatchQueryDescriptor<JournalDocument> descriptor, 
+                                                            string title, string _abstract, string keywords, 
+                                                            IEnumerable<RefineItem> refines)
+    {
+        foreach (var refine in refines)
+        {
+            switch (refine.Title)
+            {
+                case "Paper Title": descriptor.Query(title).Analyzer("journals").Fields(f => FillFieldsDescriptor(f, refine.Fields)); break;
+                case "Paper Abstract": descriptor.Query(_abstract).Analyzer("journals").Fields(f => FillFieldsDescriptor(f, refine.Fields)); break;
+                case "Paper Keywords": descriptor.Query(keywords).Analyzer("journals").Fields(f => FillFieldsDescriptor(f, refine.Fields)); break;
+            }
+        }
+
+        return descriptor;
+    }
+
+    public async Task<ICollection<JournalResult<JournalDocument>>> GetJournals(string title, string _abstract, string keywords, IEnumerable<RefineItem> refines) 
+    {
         var query = new QueryContainerDescriptor<JournalDocument>()
-                        .DisMax(d => {
+                        .DisMax(d =>
+                        {
                             d.TieBreaker(0.7);
-                            d.Queries(dq => 
-                                dq.MultiMatch(m => 
-                                    m.Query(title)
-                                        .Fields(f => 
-                                            f.Field(p => p.Title, 2)
-                                            .Field(p => p.AimsAndScope)
-                                            .Field(p => p.About))
-                                        .Analyzer("journals")
-                                        //.Fuzziness(Fuzziness.Auto)
-                                    //    .ZeroTermsQuery(ZeroTermsQuery.All)
-                                    .Query(_abstract)
-                                        .Fields(f => 
-                                            f.Field(p => p.Title)
-                                            .Field(p => p.AimsAndScope, 1.5)
-                                            .Field(p => p.About))
-                                        .Analyzer("journals")
-                                        //.Fuzziness(Fuzziness.Auto)
-                                    //    .ZeroTermsQuery(ZeroTermsQuery.All)
-                                    // .Query(keywords)
-                                    //     .Fields(f => 
-                                    //         f.Field(p => p.Title, 1.5)
-                                    //         .Field(p => p.AimsAndScope)
-                                    //         .Field(p => p.About))
-                                    //     //.Analyzer("journals")
-                                    //     //.Fuzziness(Fuzziness.Auto)
-                                    //     .ZeroTermsQuery(ZeroTermsQuery.All)
-                                )
-                                
+                            d.Queries(dq =>
+                               dq.MultiMatch(m =>
+                                FillMultiMatchQueryDescriptor(m, title, _abstract, keywords, refines)
+                               )
                             );
+
                             return d;
                         });
-                        
-
         var result = await repository.SearchAsync(_ => query);
 
         return result.ToList();
