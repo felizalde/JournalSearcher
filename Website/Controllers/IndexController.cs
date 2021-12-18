@@ -28,7 +28,7 @@ public class IndexController : ControllerBase
     [Authorize(Roles = ApplicationRoles.ADMIN)]
     public async Task<IActionResult> FillIndex([FromQuery] int version)
     {
-        await searcher.CleanIndexAsync();
+        //await searcher.CleanIndexAsync();
 
         var journals = data.GetAllJournals(version);
 
