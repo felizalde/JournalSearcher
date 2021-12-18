@@ -5,8 +5,6 @@
 ## 1- Steps to run the containers
 
 ```
-docker-compose build
-
 docker-compose up -d
 ```
 
@@ -60,7 +58,7 @@ docker cp SRC_FILE pgadmin_container:/tmp/JournalsRecommender.backup
 
 _*Create the index, and run the scrappers requires Admin privileges_
 
-3. Add the token generate to the Authorize button.
+3. Add the token generated to the Authorize button.
 
 4. Run `api/index/create` to create the index.
 

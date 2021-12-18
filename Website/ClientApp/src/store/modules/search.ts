@@ -4,7 +4,7 @@ import { AxiosResponse } from 'axios';
 
 import $http from '../../plugins/axios';
 
-import { IJournal, IResult, ISearchState } from '@/interfaces/Search';
+import { IJournal, IRefineItem, IResult, ISearchState } from '@/interfaces/Search';
 import { IRootState } from '@/interfaces/RootState';
 
 export default {
@@ -44,7 +44,7 @@ export default {
      */
     async search(
       { commit }: ActionContext<ISearchState, IRootState>,
-      payload: { title: string, abstract: string, keywords: string[], impactFactor: { min: number, max: number } }
+      payload: { title: string, abstract: string, keywords: string[], setting: IRefineItem[] }
     ): Promise<void> {
       try {
         const response = await $http.Api({

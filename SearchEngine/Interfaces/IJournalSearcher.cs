@@ -11,5 +11,5 @@ public interface IJournalSearcher<T> where T : BaseIndex
     Task CleanIndexAsync();
     Task<ICollection<T>> GetAllAsync();
     Task<ICollection<JournalResult<T>>> SearchInAllFiels(string term);
-    Task<ICollection<JournalResult<T>>> GetJournalsAllCondition(string title, string _abstract, string keywords);
+    Task<ICollection<JournalResult<T>>> GetJournals(string title, string _abstract, string keywords, IEnumerable<RefineItem> refines);
 }

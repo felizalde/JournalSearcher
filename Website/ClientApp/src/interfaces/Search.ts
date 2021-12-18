@@ -25,3 +25,15 @@ export interface IMetric {
     name: string;
     value: number;
 }
+
+
+export interface IRefineField {
+    name: string;
+    active: boolean;
+    boost: number;
+}
+
+export interface IRefineItem {
+    title: string;
+    fields: IRefineField[];
+}

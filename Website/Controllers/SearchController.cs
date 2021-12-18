@@ -27,11 +27,11 @@ public class SearchController : ControllerBase
     [Authorize(Roles = ApplicationRoles.ALL)]
     public async Task<SearchResult<JournalDocument>> Search([FromBody] SearchRequest search)
     {
-        var result = await searcher.GetJournalsAllCondition(search.Title, search.Abstract, string.Join(",", search.Keywords));
+        var result = await searcher.GetJournals(search.Title, search.Abstract, string.Join(",", search.Keywords), search.Setting);
         //TODO: paginate need to be handle in frontend, here it will return all journals
         return new SearchResult<JournalDocument>()
         {
-            Total = result.Count(),
+            Total = result.Count,
             Page = 1,
             Size = 20,
             Items = result.ToList()
