@@ -41,8 +41,8 @@ export default defineComponent({
         };
 
         const handleChange = (keyword: string) => {
-            if (keyword.length > 0) {
-                model.keywords.push(keyword);
+            if (keyword.length > 0) {                
+                model.keywords.push(...keyword.split(',').map(k => k.trim()));
                 model.keyword = "";
                 emitUpdate();
             }
