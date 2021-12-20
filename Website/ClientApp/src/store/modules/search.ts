@@ -4,22 +4,28 @@ import { AxiosResponse } from 'axios';
 
 import $http from '../../plugins/axios';
 
-import { IJournal, IRefineItem, IResult, ISearchState } from '@/interfaces/Search';
+import { IResult, ISearchForm, ISearchState } from '@/interfaces/Search';
 import { IRootState } from '@/interfaces/RootState';
+import { RefineInitialValues } from '@/utils/RefineSettings';
 
 export default {
   namespaced: true,
 
   state: {
     journals: [],
-    selectedJournal: null,
     isLoading: false,
     error: '',
+    form: {
+      title: '',
+      abstract: '',
+      keywords: [],
+      setting: RefineInitialValues
+    }
   },
 
   getters: {
     getJournals: (state: ISearchState): IResult[] => state.journals,
-    getSelectedJournal: (state: ISearchState): IJournal => state.selectedJournal,
+    getFormValues: (state: ISearchState): ISearchForm => state.form,
     getIsLoading: (state: ISearchState): boolean => state.isLoading,
   },
 
@@ -27,8 +33,8 @@ export default {
     SET_JOURNALS(state: ISearchState, payload: IResult[]): void {
       state.journals = payload;
     },
-    SET_SELECTED_JOURNAL(state: ISearchState, payload: IJournal): void {
-      state.selectedJournal = payload;
+    SET_FORM_VALUES(state: ISearchState, payload: ISearchForm): void {
+      state.form = payload;
     },
     SET_IS_LOADING(state: ISearchState, payload: boolean): void {
       state.isLoading = payload;
@@ -44,9 +50,10 @@ export default {
      */
     async search(
       { commit }: ActionContext<ISearchState, IRootState>,
-      payload: { title: string, abstract: string, keywords: string[], setting: IRefineItem[] }
+      payload: ISearchForm
     ): Promise<void> {
       try {
+        commit('SET_IS_LOADING', true);
         const response = await $http.Api({
           method: 'POST',
           url: `/search`,
@@ -56,11 +63,31 @@ export default {
         //TODO: Make Pagination in front-end
         const journals: IResult[] = response.data?.items;
         commit('SET_JOURNALS', journals);
+        commit('SET_FORM_VALUES', payload);
+        commit('SET_IS_LOADING', false);
 
       } catch (error: any) {
         throw error.response;
       }
     },
+
+    /**
+     * Reset search form.
+     * @param {ActionContext<ISearchState, IRootState>} { commit }
+     * @return {*}  {Promise<void>}
+     */
+    async resetForm({ commit }: ActionContext<ISearchState, IRootState>): Promise<void> {
+      return new Promise<void>(resolve =>  {
+        commit('SET_FORM_VALUES', {
+          title: '',
+          abstract: '',
+          keywords: [],
+          setting: RefineInitialValues
+        });
+        resolve();
+      });
+    }
+
 
    
   },

@@ -2,9 +2,9 @@
   <nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
-        <router-link class="navbar-brand" to="/">
+        <a class="navbar-brand" @click="onLogoClick" tabindex="1" href="/">
             <h4>HelpMePublish! - Journal Finder</h4>
-        </router-link>
+        </a>
       </div>
       <form class="form-inline">
         <el-dropdown>
@@ -30,13 +30,19 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import useAuthentication from '@/uses/useAuthentication';
+import useSearch from '@/uses/useSearch';
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: "NavBar",
   setup() {    
     const { logout } = useAuthentication();
+    const { resetForm } = useSearch();
     const router = useRouter();
+
+    const onLogoClick = async () =>  {
+      await resetForm();
+    }
 
     const onLogout = async () =>  {
       logout();
@@ -47,7 +53,8 @@ export default defineComponent({
     
     return {
       onLogout,
-      goHome
+      goHome, 
+      onLogoClick
     }
   }
 });
