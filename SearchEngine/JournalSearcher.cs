@@ -78,10 +78,13 @@ public class JournalSearcher : IJournalSearcher<JournalDocument>
         {
             switch (refine.Title)
             {
-                case "Paper Title": descriptor.Query(title).Analyzer("journals").Fields(f => FillFieldsDescriptor(f, refine.Fields)); break;
-                case "Paper Abstract": descriptor.Query(_abstract).Analyzer("journals").Fields(f => FillFieldsDescriptor(f, refine.Fields)); break;
-                case "Paper Keywords": descriptor.Query(keywords).Analyzer("journals").Fields(f => FillFieldsDescriptor(f, refine.Fields)); break;
+                case "Paper Title": descriptor.Query(title); break;
+                case "Paper Abstract": descriptor.Query(_abstract); break;
+                case "Paper Keywords": descriptor.Query(keywords); break;
             }
+            descriptor.Analyzer("journals").Fields(f => FillFieldsDescriptor(f, 
+                                                                refine.Fields.Where(x => x.Active)
+                                                                )).Type(TextQueryType.MostFields);
         }
 
         return descriptor;
@@ -92,11 +95,12 @@ public class JournalSearcher : IJournalSearcher<JournalDocument>
         var query = new QueryContainerDescriptor<JournalDocument>()
                         .DisMax(d =>
                         {
-                            d.TieBreaker(0.7);
+                            //d.TieBreaker(0.7); Maybe is not fair, since not all journals contains the same fields. 
                             d.Queries(dq =>
                                dq.MultiMatch(m =>
                                 FillMultiMatchQueryDescriptor(m, title, _abstract, keywords, refines)
                                )
+                               
                             );
 
                             return d;
