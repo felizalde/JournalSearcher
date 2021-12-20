@@ -24,12 +24,12 @@ public class WileyScraper : Scraper
     private ISet<Journal> ParseListItems(IEnumerable<IElement> elems) =>
         elems.Aggregate(new HashSet<Journal>(), (journals, li) =>
         {
-            var imgUrl = li.QuerySelectorAll("img").FirstOrDefault()?.GetAttribute("src");
-            var Url = li.QuerySelectorAll("a").FirstOrDefault()?.GetAttribute("href");
+            var imgUrl = li.QuerySelectorAll("img").FirstOrDefault()?.GetAttribute("data-src");
+            var Url = li.QuerySelectorAll("a").FirstOrDefault()?.GetAttribute("href"); 
             var Title = li.QuerySelector("a.visitable")?.TextContent;
             var journal = new Journal
             {
-                ImgUrl = imgUrl,
+                ImgUrl = ScraperUtils.GetUrl(imgUrl, editorial.BaseUrl),
                 Url = ScraperUtils.GetUrl(Url, editorial.BaseUrl),
                 Title = Title,
                 OriginalID = Url[(Url.LastIndexOf('/') + 1)..],
