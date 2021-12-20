@@ -67,7 +67,7 @@ services:
 
   website:
     container_name: journals-searcher
-    image: colohead3r/journals-searcher:v1-rc05
+    image: colohead3r/journals-searcher:v1-rc06
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
     ports:
