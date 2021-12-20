@@ -21,6 +21,8 @@ export function FormatMetricValue(name: string, value: number): string {
             return `${value.toFixed(1)} weeks`;
         case 'days to first decision for reviewed manuscripts only':
         case 'days to first decision for all manuscripts':
+        case 'days from acceptance to publication':
+        case 'days from submission to acceptance':
             return `${value.toFixed(0)}`;
         default:
             return `${value.toFixed(3)}`;
