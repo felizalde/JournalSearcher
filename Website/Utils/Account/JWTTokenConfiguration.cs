@@ -27,7 +27,7 @@ public class JWTTokenConfiguration
             IssuerSigningKey = new SymmetricSecurityKey(_key),
             ValidateIssuer = false,
             ValidateAudience = false,
-            //ValidateLifetime = true, // By defualt is true
+            ValidateLifetime = false, //TODO: Improve this adding a refresh token mechanism. :D
             //ClockSkew = TimeSpan.Zero // This is set to 5 minutes (so a token will last 5 minutes more than its actual expiration datetime)
         };
     }

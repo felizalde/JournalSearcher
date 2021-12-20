@@ -1,8 +1,15 @@
 export interface ISearchState {
     journals: IResult[];
-    selectedJournal: IJournal;
     isLoading: boolean;
     error: string;
+    form: ISearchForm;
+}
+
+export interface ISearchForm {
+    title: string;
+    abstract: string;
+    keywords: string[];
+    setting: IRefineItem[];
 }
 
 export interface IResult {

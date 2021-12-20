@@ -51,9 +51,8 @@ import InputTag  from '../Shared/InputTag.vue';
 import useSearch from "@/uses/useSearch";
 import { useRouter } from "vue-router";
 import RefineSearch from './RefineSearch.vue';
-import { RefineInitialValues } from '@/utils/RefineSettings';
 import { IRefineItem } from '@/interfaces/Search';
-
+import clone from 'just-clone';
 
 export default defineComponent({
   components: {
@@ -61,7 +60,7 @@ export default defineComponent({
     RefineSearch
   },
   setup() {    
-    const { search } = useSearch();    
+    const { search, formValues } = useSearch();    
     const router = useRouter();
     const refine = ref(false);
 
@@ -70,12 +69,8 @@ export default defineComponent({
     const refineIcon = computed(() => refine.value ? 'fas fa-minus pr-2' : 'fas fa-plus pr-2');
 
     const form = ref(null);
-    const model = reactive({
-      title: "",
-      abstract: "",
-      keywords: [] as string[],
-      setting: RefineInitialValues as IRefineItem[]
-    });
+    
+    const model = reactive(clone(formValues.value));
 
     const rules = {
       title: [
@@ -108,16 +103,14 @@ export default defineComponent({
 
     const onSubmit = async () => {
       const valid = ((form.value as unknown) as { validate: () => boolean }).validate();
-      console.log(valid);
       if (!valid) return;
 
       const loadingInstance = ElLoading.service({ fullscreen: true });
       try {
-        console.log(model);
         await search(model);
         router.push({ name: "Results" });
       } catch (error) {
-        console.log(error);
+        console.log(error);//TODO
       } finally {
         loadingInstance.close();
       }
