@@ -144,4 +144,21 @@ public class JournalsRecommenderData
         }
     }
 
+
+    public IEnumerable<T> ExecQuery<T>(string query, object param = null)
+    {
+        try
+        {
+            var conn = Connection;
+            var result = conn.Query<T>(query, param);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
 }
