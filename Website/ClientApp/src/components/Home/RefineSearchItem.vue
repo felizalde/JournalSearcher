@@ -12,7 +12,7 @@
         size="small"
         >
         </el-checkbox>
-        <el-input-number v-model="field.boost"  :step="0.5" size="mini" />
+        <el-input-number v-model="field.boost"  :step="0.1" size="mini" />
       </el-form-item>
     </div>
   </el-col>
