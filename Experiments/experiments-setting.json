@@ -1,5 +1,5 @@
 {
-  "query": "select paper_info.title, abstract, paper_info.keywords, journal.id as journalid, journal.title as journaltitle from paper_info inner join venue_info on venue_info.id = paper_info.venue_id inner join journal on venue_info.displayname = journal.title where journal.version = 3 and paper_info.year >= 2015 limit 100",
+  "query": "SELECT paper_info.title,        abstract,        paper_info.keywords,        journal.id    AS journalid,        journal.title AS journaltitle FROM   paper_info        INNER JOIN venue_info                ON venue_info.id = paper_info.venue_id        INNER JOIN journal                ON venue_info.displayname = journal.title WHERE  journal.version = 3        AND paper_info.year >= 2010  and journal.Editorial like 'Springer' order by paper_info.id desc LIMIT  300 ",
   "refines": [
     {
       "title": "Paper Title",
@@ -11,17 +11,17 @@
         },
         {
           "name": "About",
-          "active": false,
-          "boost": 1
-        },
-        {
-          "name": "Aims and Scope",
           "active": true,
           "boost": 1.5
         },
         {
-          "name": "Keywords",
+          "name": "Aims and Scope",
           "active": true,
+          "boost": 2
+        },
+        {
+          "name": "Keywords",
+          "active": false,
           "boost": 1.5
         }
       ]
@@ -36,7 +36,7 @@
         },
         {
           "name": "About",
-          "active": false,
+          "active": true,
           "boost": 1
         },
         {
@@ -46,7 +46,7 @@
         },
         {
           "name": "Keywords",
-          "active": true,
+          "active": false,
           "boost": 1.5
         }
       ]
@@ -57,21 +57,21 @@
         {
           "name": "Title",
           "active": true,
-          "boost": 2
+          "boost": 3
         },
         {
           "name": "About",
-          "active": false,
-          "boost": 1
+          "active": true,
+          "boost": 1.5
         },
         {
           "name": "Aims and Scope",
           "active": true,
-          "boost": 2
+          "boost": 3
         },
         {
           "name": "Keywords",
-          "active": true,
+          "active": false,
           "boost": 2
         }
       ]

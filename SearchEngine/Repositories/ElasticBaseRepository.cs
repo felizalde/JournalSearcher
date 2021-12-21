@@ -53,7 +53,7 @@ public abstract class ElasticBaseRepository<T> : IElasticBaseRepository<T> where
         var response = await _elasticClient.SearchAsync<T>(s =>
             s.Index(IndexName)
                 .Query(request)
-                .Size(20) //TODO: parametrize this and add pagination.
+                .Size(50) //TODO: parametrize this and add pagination.
                 );
 
         if (!response.IsValid)

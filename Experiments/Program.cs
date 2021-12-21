@@ -65,10 +65,10 @@ ExperimentResult CreateExperimentResult(ExperimentInput input, List<JournalResul
         case 0 : type = MatchExperimentType.First; break;
         case < 5: type = MatchExperimentType.Top5; break;
         case < 10: type = MatchExperimentType.Top10; break;
-        case < 20: type = MatchExperimentType.Top20; break;
+        case < 50: type = MatchExperimentType.Top50; break;
     }
 
-    return new ExperimentResult(Guid.NewGuid(), input, results, type);
+    return new ExperimentResult(Guid.NewGuid(), input, results.Select( x => new ExperimentResultDocument(x.Document.Title, x.Document.Id, x.Score)).ToList(), type);
 }
 
 async Task Main() {
@@ -86,8 +86,10 @@ async Task Main() {
     Console.WriteLine("Found in top 1: {0}", results.Where(x => x.MatchType == MatchExperimentType.First).Count());
     Console.WriteLine("Found in top 5: {0}", results.Where(x => x.MatchType == MatchExperimentType.Top5).Count());
     Console.WriteLine("Found in top 10: {0}", results.Where(x => x.MatchType == MatchExperimentType.Top10).Count());
-    Console.WriteLine("Found in top 20: {0}", results.Where(x => x.MatchType == MatchExperimentType.Top20).Count());
+    Console.WriteLine("Found in top 50: {0}", results.Where(x => x.MatchType == MatchExperimentType.Top50).Count());
     Console.WriteLine("Not Found: {0}", results.Where(x => x.MatchType == MatchExperimentType.NoMatch).Count());
+
+    File.WriteAllText(@$"C:\temp\experiments\experiment-{DateTime.Now.ToString("yyyyMMddss")}.json", result);
 }
 
 await Main();
