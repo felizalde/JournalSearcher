@@ -16,18 +16,20 @@ public record ExperimentInput(
 );
 
 
-public record ExperimentResult (
+public record ExperimentResultDocument(string Title, string Id, double? Score);
+
+public record ExperimentResult(
     Guid Id,
     ExperimentInput Input,
-    object Result,
+    List<ExperimentResultDocument> Result,
     MatchExperimentType MatchType
 );
 
-public enum MatchExperimentType 
+public enum MatchExperimentType
 {
     First,
     Top5,
     Top10,
-    Top20,
+    Top50,
     NoMatch
 }
