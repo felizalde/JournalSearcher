@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Experiments": {
+      "commandName": "Project",
+      "commandLineArgs": "--path=\"C:\\\\Users\\\\efeal\\\\source\\\\repos\\\\JournalSearcher\\\\Experiments\\\\experiments-setting.json\""
+    }
+  }
+}

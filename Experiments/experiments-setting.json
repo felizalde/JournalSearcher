@@ -1,0 +1,80 @@
+{
+  "query": "select paper_info.title, abstract, paper_info.keywords, journal.id as journalid, journal.title as journaltitle from paper_info inner join venue_info on venue_info.id = paper_info.venue_id inner join journal on venue_info.displayname = journal.title where journal.version = 3 and paper_info.year >= 2015 limit 100",
+  "refines": [
+    {
+      "title": "Paper Title",
+      "fields": [
+        {
+          "name": "Title",
+          "active": true,
+          "boost": 2
+        },
+        {
+          "name": "About",
+          "active": false,
+          "boost": 1
+        },
+        {
+          "name": "Aims and Scope",
+          "active": true,
+          "boost": 1.5
+        },
+        {
+          "name": "Keywords",
+          "active": true,
+          "boost": 1.5
+        }
+      ]
+    },
+    {
+      "title": "Paper Abstract",
+      "fields": [
+        {
+          "name": "Title",
+          "active": true,
+          "boost": 1
+        },
+        {
+          "name": "About",
+          "active": false,
+          "boost": 1
+        },
+        {
+          "name": "Aims and Scope",
+          "active": true,
+          "boost": 2
+        },
+        {
+          "name": "Keywords",
+          "active": true,
+          "boost": 1.5
+        }
+      ]
+    },
+    {
+      "title": "Paper Keywords",
+      "fields": [
+        {
+          "name": "Title",
+          "active": true,
+          "boost": 2
+        },
+        {
+          "name": "About",
+          "active": false,
+          "boost": 1
+        },
+        {
+          "name": "Aims and Scope",
+          "active": true,
+          "boost": 2
+        },
+        {
+          "name": "Keywords",
+          "active": true,
+          "boost": 2
+        }
+      ]
+    }
+  ]
+}
