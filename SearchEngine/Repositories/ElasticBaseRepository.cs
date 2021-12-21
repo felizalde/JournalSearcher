@@ -53,15 +53,12 @@ public abstract class ElasticBaseRepository<T> : IElasticBaseRepository<T> where
         var response = await _elasticClient.SearchAsync<T>(s =>
             s.Index(IndexName)
                 .Query(request)
-                //.Lenient()
+                .Size(20) //TODO: parametrize this and add pagination.
                 );
 
         if (!response.IsValid)
             throw new Exception(response.ServerError?.ToString(), response.OriginalException);
-
-
-        //https://www.compose.com/articles/how-scoring-works-in-elasticsearch/ TODO
-
+            
         return response.Hits
             .Select(hit =>
                 new JournalResult<T>
