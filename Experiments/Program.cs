@@ -17,6 +17,7 @@ IConfiguration Configuration =
 
 JournalsRecommenderData Data = new(Configuration);
 
+int MAX_CHARACTERS = 8000;
 
 ElasticClient CreateElasticClient(IConfiguration configuration) 
 {
@@ -46,7 +47,12 @@ async Task<List<ExperimentResult>> RunExperiments(List<ExperimentInput> inputs, 
 
     foreach(var input in inputs)
     {
-        var results = await searcher.GetJournals(input.Title, input.Abstract, input.Keywords, refines);
+        var results = await searcher.GetJournals(
+            input.Title, 
+            input.Abstract.Length > MAX_CHARACTERS 
+                                ? input.Abstract[..MAX_CHARACTERS]
+                                : input.Abstract,
+           input.Keywords, refines);
         output.Add(CreateExperimentResult(input, results.ToList()));
     }
 
@@ -89,7 +95,7 @@ async Task Main() {
     Console.WriteLine("Found in top 50: {0}", results.Where(x => x.MatchType == MatchExperimentType.Top50).Count());
     Console.WriteLine("Not Found: {0}", results.Where(x => x.MatchType == MatchExperimentType.NoMatch).Count());
 
-    File.WriteAllText(@$"C:\temp\experiments\experiment-{DateTime.Now.ToString("yyyyMMddss")}.json", result);
+   // File.WriteAllText(@$"C:\temp\experiments\experiment-{DateTime.Now.ToString("yyyyMMddss")}.json", result);
 }
 
 await Main();
