@@ -27,13 +27,14 @@ public class JournalSearcher : IJournalSearcher<JournalDocument>
             Url = x.Url,
             ImgUrl = x.ImgUrl,
             ImpactFactor = x.ImpactFactor,
-            Metrics =  x.Metrics?.Select(y => 
-                                    new JournalMetricDocument() { 
-                                        Id = y.Id.ToString(), 
-                                        JournalId = x.Id.ToString(), 
-                                        Name = y.Name, 
-                                        Value = y.Value
-                                    }).ToList() ?? new()
+            Metrics = x.Metrics?.Select(y =>
+                                   new JournalMetricDocument()
+                                   {
+                                       Id = y.Id.ToString(),
+                                       JournalId = x.Id.ToString(),
+                                       Name = y.Name,
+                                       Value = y.Value
+                                   }).ToList() ?? new()
         }).ToList();
 
         await repository.InsertManyAsync(documents);
@@ -54,57 +55,79 @@ public class JournalSearcher : IJournalSearcher<JournalDocument>
         return result.ToList();
     }
 
-    private static FieldsDescriptor<JournalDocument> FillFieldsDescriptor(FieldsDescriptor<JournalDocument> descriptor, IEnumerable<RefineField> fields)
+    private static IEnumerable<Field> CreateFields(IEnumerable<RefineField> fields)
     {
+        var output = new List<Field>();
         foreach (var field in fields)
         {
             switch (field.Name)
             {
-                case "Title": descriptor.Field(j => j.Title, field.Boost); break;
-                case "About": descriptor.Field(j => j.About, field.Boost); break;
-                case "Aims and Scope": descriptor.Field(j => j.AimsAndScope, field.Boost); break;
-                case "Keywords": descriptor.Field(j => j.Keywords, field.Boost); break;
+                case "Title": output.Add(new Field("title", field.Boost)); break;
+                case "About": output.Add(new Field("about", field.Boost)); break;
+                case "Aims and Scope": output.Add(new Field("aims_and_scope", field.Boost)); break;
+                case "Keywords": output.Add(new Field("keywords", field.Boost)); break;
             }
         }
 
-        return descriptor;
+        return output;
     }
 
-    private static MultiMatchQueryDescriptor<JournalDocument> FillMultiMatchQueryDescriptor(MultiMatchQueryDescriptor<JournalDocument> descriptor, 
-                                                            string title, string _abstract, string keywords, 
-                                                            IEnumerable<RefineItem> refines)
+    private static IEnumerable<QueryContainer> CreateQueries(string title, string _abstract, string keywords, IEnumerable<RefineItem> refines)
     {
+        var queries = new List<QueryContainer>();
         foreach (var refine in refines)
         {
             switch (refine.Title)
             {
-                case "Paper Title": descriptor.Query(title); break;
-                case "Paper Abstract": descriptor.Query(_abstract); break;
-                case "Paper Keywords": descriptor.Query(keywords); break;
+                case "Paper Title":
+                    queries.Add(new MultiMatchQuery
+                    {
+                        Name = "title_query",
+                        Query = title,
+                        Fields = CreateFields(refine.Fields.Where(f => f.Active)).ToArray(),
+                        Analyzer = "journals",
+                        Type = TextQueryType.MostFields
+
+                    });
+                    break;
+                case "Paper Abstract":
+                    queries.Add(new MultiMatchQuery
+                    {
+                        Name = "abstract_query",
+                        Query = _abstract,
+                        Fields = CreateFields(refine.Fields.Where(f => f.Active)).ToArray(),
+                        Analyzer = "journals",
+                        Type = TextQueryType.MostFields
+
+                    });
+                    break;
+                case "Paper Keywords":
+                    queries.Add(new MultiMatchQuery
+                    {
+                        Name = "keywords_query",
+                        Query = keywords,
+                        Fields = CreateFields(refine.Fields.Where(f => f.Active)).ToArray(),
+                        Analyzer = "journals",
+                        Type = TextQueryType.MostFields
+
+                    });
+                    break;
             }
-            descriptor.Analyzer("journals").Fields(f => FillFieldsDescriptor(f, 
-                                                                refine.Fields.Where(x => x.Active)
-                                                                )).Type(TextQueryType.MostFields);
         }
 
-        return descriptor;
+        return queries;
     }
 
-    public async Task<ICollection<JournalResult<JournalDocument>>> GetJournals(string title, string _abstract, string keywords, IEnumerable<RefineItem> refines) 
+    public async Task<ICollection<JournalResult<JournalDocument>>> GetJournals(string title, string _abstract, string keywords, IEnumerable<RefineItem> refines)
     {
-        var query = new QueryContainerDescriptor<JournalDocument>()
-                        .DisMax(d =>
-                        {
-                            //d.TieBreaker(0.7); Maybe is not fair, since not all journals contains the same fields. 
-                            d.Queries(dq =>
-                               dq.MultiMatch(m =>
-                                FillMultiMatchQueryDescriptor(m, title, _abstract, keywords, refines)
-                               )
-                               
-                            );
 
-                            return d;
-                        });
+        var query = new DisMaxQuery()
+        {
+            Name = "dynamic_query",
+            //TieBreaker = 0.11, //->TODO:Review! Maybe is not fair, since not all journals contains the same fields. 
+            Queries = CreateQueries(title, _abstract, keywords, refines)
+        };
+        
         var result = await repository.SearchAsync(_ => query);
 
         return result.ToList();
