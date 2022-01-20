@@ -27,7 +27,7 @@ public class ScrappersController : ControllerBase
 
     private void InsertJournals(IEnumerable<Journal> journals, int version)
     {
-        var journals_version = journals.ToList();
+        var journals_version = journals.Where(j => !string.IsNullOrEmpty(j.AimsAndScope)).ToList();
         var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
         journals_version.ForEach( j =>  {
             j.Version = version;

@@ -72,9 +72,10 @@ public class JournalsRecommenderData
             var mapped = new Dictionary<Guid, Journal>();
 
             var conn = Connection;
+            string editorial = "Springer";
             var journals = conn.Query<Journal, JournalMetric, Journal>(@"SELECT * FROM journal 
                                                      LEFT JOIN journal_metrics on journal.id = journal_metrics.journalid
-                                                     WHERE version = @version", (journal, metric) =>
+                                                     WHERE version = @version and editorial=@editorial", (journal, metric) =>
                                                                        {
                                                                            if (!mapped.TryGetValue(journal.Id, out Journal toMap))
                                                                            {
@@ -87,7 +88,7 @@ public class JournalsRecommenderData
                                                                                 toMap.Metrics.Add(metric);
                                                                            }
                                                                            return toMap;
-                                                                       }, new { version }).Distinct();
+                                                                       }, new { version, editorial }).Distinct();
                                                       
             return journals;
         }

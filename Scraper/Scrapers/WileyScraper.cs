@@ -97,12 +97,13 @@ public class WileyScraper : Scraper
 
     public override async Task<Journal> FillJournalDetails(Journal journal, IDocument page)
     {
-        var impactFactor = page.QuerySelector("#main-content > div > div > div:nth-child(1) > section > div > div > div.journal-info-container.col-md-8 > div:nth-child(3) > div:nth-child(1) > span.info_value")?.TextContent.Trim();
-        journal.ImpactFactor = 0;
-        if (impactFactor != null)
+        if (page.Url.Contains("ietresearch"))
         {
-            journal.ImpactFactor = ScraperUtils.ParseDouble(impactFactor, 0);
-            journal.Metrics.Add(new() { Name = "Impact Factor", Value = journal.ImpactFactor.Value });
+            ParseImpactFactorForITEPage(journal, page);
+        } 
+        else
+        {
+            ParseImpactFactorForBasicPage(journal, page);
         }
 
         var overviewPageUrl = page.QuerySelector("#About-1-dropdown > li:nth-child(1) > a")?.GetAttribute("href");
@@ -119,5 +120,27 @@ public class WileyScraper : Scraper
         }
 
         return journal;
+    }
+
+    private void ParseImpactFactorForBasicPage(Journal journal, IDocument page)
+    {
+        var impactFactor = page.QuerySelector("#main-content > div > div > div:nth-child(1) > section > div > div > div.journal-info-container.col-md-8 > div:nth-child(3) > div:nth-child(1) > span.info_value")?.TextContent.Trim();
+        journal.ImpactFactor = 0;
+        if (impactFactor != null)
+        {
+            journal.ImpactFactor = ScraperUtils.ParseDouble(impactFactor, 0);
+            journal.Metrics.Add(new() { Name = "Impact Factor", Value = journal.ImpactFactor.Value });
+        }
+    }
+
+    private void ParseImpactFactorForITEPage(Journal journal, IDocument page)
+    {
+        var impactFactor = page.QuerySelector("#main-content > div.page-body.pagefulltext > div > section.hub-journal-bar > section > div > div > div.journal-info-container.col-md-8 > div > div:nth-child(2) > div:nth-child(1) > span.info_value")?.TextContent.Trim();
+        journal.ImpactFactor = 0;
+        if (impactFactor != null)
+        {
+            journal.ImpactFactor = ScraperUtils.ParseDouble(impactFactor, 0);
+            journal.Metrics.Add(new() { Name = "Impact Factor", Value = journal.ImpactFactor.Value });
+        }
     }
 }

@@ -7,11 +7,13 @@ using SearchEngine;
 using SearchEngine.Indices;
 using SearchEngine.Interfaces;
 using SearchEngine.Repositories;
+using System.Diagnostics;
 using System.Text.Json;
 
 IConfiguration Configuration =
     new ConfigurationBuilder()
         .AddJsonFile(Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\Website\appsettings.Development.json"), optional: true, reloadOnChange: true)
+        //.AddJsonFile(Path.Combine(Environment.CurrentDirectory, @"appsettings.Development.json"), optional: true, reloadOnChange: true)
         .AddCommandLine(Environment.GetCommandLineArgs())
         .Build();
 
@@ -78,6 +80,12 @@ ExperimentResult CreateExperimentResult(ExperimentInput input, List<JournalResul
 }
 
 async Task Main() {
+    // Start time span
+    Stopwatch stopWatch = new();
+    stopWatch.Start();
+    Console.WriteLine("Started");
+    Console.WriteLine(Path.Combine(Environment.CurrentDirectory, @"appsettings.Development.json"));
+
     var settingFile = Configuration["path"];
     var fileContent = File.ReadAllText(settingFile);
     var setting =  JsonSerializer.Deserialize<ExperimentSetting>(fileContent, new JsonSerializerOptions()
@@ -87,15 +95,22 @@ async Task Main() {
     var inputs = LoadInitialInputs(setting.Query);
     var results = await RunExperiments(inputs, setting.Refines);
 
-    var result = JsonSerializer.Serialize(results);
+    //var result = JsonSerializer.Serialize(results);
 
     Console.WriteLine("Found in top 1: {0}", results.Where(x => x.MatchType == MatchExperimentType.First).Count());
     Console.WriteLine("Found in top 5: {0}", results.Where(x => x.MatchType == MatchExperimentType.Top5).Count());
     Console.WriteLine("Found in top 10: {0}", results.Where(x => x.MatchType == MatchExperimentType.Top10).Count());
     Console.WriteLine("Found in top 50: {0}", results.Where(x => x.MatchType == MatchExperimentType.Top50).Count());
     Console.WriteLine("Not Found: {0}", results.Where(x => x.MatchType == MatchExperimentType.NoMatch).Count());
+    // File.WriteAllText(@$"C:\temp\experiments\experiment-{DateTime.Now.ToString("yyyyMMddss")}.json", result);
 
-   // File.WriteAllText(@$"C:\temp\experiments\experiment-{DateTime.Now.ToString("yyyyMMddss")}.json", result);
+    stopWatch.Stop();
+    TimeSpan ts = stopWatch.Elapsed;
+    var elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+            ts.Hours, ts.Minutes, ts.Seconds,
+            ts.Milliseconds / 10);
+    Console.WriteLine($"Time elapsed: {elapsedTime}");
+   
 }
 
 await Main();
