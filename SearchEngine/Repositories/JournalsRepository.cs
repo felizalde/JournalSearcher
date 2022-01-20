@@ -12,7 +12,7 @@ public class JournalsRepository: ElasticBaseRepository<JournalDocument>, IJourna
     {
     }
 
-    public override string IndexName => "journals-index";
+    public override string IndexName => "journals-index_springer";
 }
 
 

@@ -17,25 +17,27 @@ public class JournalSearcher : IJournalSearcher<JournalDocument>
     public async Task InsertManyAsync(IEnumerable<Journal> journals)
     {
 
-        var documents = journals.Select(x => new JournalDocument
-        {
-            Id = x.Id.ToString(),
-            Title = x.Title,
-            About = x.About,
-            AimsAndScope = x.AimsAndScope,
-            Editorial = x.Editorial,
-            Url = x.Url,
-            ImgUrl = x.ImgUrl,
-            ImpactFactor = x.ImpactFactor,
-            Metrics = x.Metrics?.Select(y =>
-                                   new JournalMetricDocument()
-                                   {
-                                       Id = y.Id.ToString(),
-                                       JournalId = x.Id.ToString(),
-                                       Name = y.Name,
-                                       Value = y.Value
-                                   }).ToList() ?? new()
-        }).ToList();
+        var documents = journals
+                        .Select(x => 
+                        new JournalDocument
+                        {
+                            Id = x.Id.ToString(),
+                            Title = x.Title,
+                            About = x.About,
+                            AimsAndScope = x.AimsAndScope,
+                            Editorial = x.Editorial,
+                            Url = x.Url,
+                            ImgUrl = x.ImgUrl,
+                            ImpactFactor = x.ImpactFactor,
+                            Metrics = x.Metrics?.Select(y =>
+                                                   new JournalMetricDocument()
+                                                   {
+                                                       Id = y.Id.ToString(),
+                                                       JournalId = x.Id.ToString(),
+                                                       Name = y.Name,
+                                                       Value = y.Value
+                                                   }).ToList() ?? new()
+                        }).ToList();
 
         await repository.InsertManyAsync(documents);
     }
@@ -87,7 +89,6 @@ public class JournalSearcher : IJournalSearcher<JournalDocument>
                         Fields = CreateFields(refine.Fields.Where(f => f.Active)).ToArray(),
                         Analyzer = "journals",
                         Type = TextQueryType.MostFields
-
                     });
                     break;
                 case "Paper Abstract":
@@ -98,7 +99,6 @@ public class JournalSearcher : IJournalSearcher<JournalDocument>
                         Fields = CreateFields(refine.Fields.Where(f => f.Active)).ToArray(),
                         Analyzer = "journals",
                         Type = TextQueryType.MostFields
-
                     });
                     break;
                 case "Paper Keywords":
@@ -124,10 +124,11 @@ public class JournalSearcher : IJournalSearcher<JournalDocument>
         var query = new DisMaxQuery()
         {
             Name = "dynamic_query",
-            //TieBreaker = 0.11, //->TODO:Review! Maybe is not fair, since not all journals contains the same fields. 
+            TieBreaker = 0.7,
             Queries = CreateQueries(title, _abstract, keywords, refines)
         };
         
+
         var result = await repository.SearchAsync(_ => query);
 
         return result.ToList();

@@ -1,5 +1,5 @@
 {
-  "query": "SELECT paper_info.title,        abstract,        paper_info.keywords,        journal.id    AS journalid,        journal.title AS journaltitle FROM   paper_info        INNER JOIN venue_info                ON venue_info.id = paper_info.venue_id        INNER JOIN journal                ON venue_info.displayname = journal.title WHERE  journal.version = 3        AND paper_info.year >= 2010  and journal.Editorial like 'Springer' order by paper_info.id desc -- LIMIT  300 ",
+  "query": "SELECT paper_info.title,       abstract,        paper_info.keywords,        journal.id    AS journalid,        journal.title AS journaltitle FROM   paper_info        INNER JOIN venue_info                ON venue_info.id = paper_info.venue_id        INNER JOIN journal                ON venue_info.displayname = journal.title WHERE  journal.version = 3        AND paper_info.year >= 2010  and journal.Editorial like 'Wiley' order by paper_info.id desc --LIMIT  10000 ",
   "refines": [
     {
       "title": "Paper Title",
@@ -7,17 +7,17 @@
         {
           "name": "Title",
           "active": true,
-          "boost": 2.7
+          "boost": 3
         },
         {
           "name": "About",
           "active": true,
-          "boost": 4
+          "boost": 1
         },
         {
           "name": "Aims and Scope",
           "active": true,
-          "boost": 3
+          "boost": 2
         },
         {
           "name": "Keywords",
@@ -32,22 +32,22 @@
         {
           "name": "Title",
           "active": true,
-          "boost": 0.4
+          "boost": 1
         },
         {
           "name": "About",
           "active": true,
-          "boost": 2.3
+          "boost": 1
         },
         {
           "name": "Aims and Scope",
           "active": true,
-          "boost": 0.4
+          "boost": 2
         },
         {
           "name": "Keywords",
           "active": true,
-          "boost": 0
+          "boost": 1
         }
       ]
     },
@@ -57,22 +57,22 @@
         {
           "name": "Title",
           "active": true,
-          "boost": 3.2
+          "boost": 2
         },
         {
           "name": "About",
           "active": true,
-          "boost": 3.2
+          "boost": 1
         },
         {
           "name": "Aims and Scope",
           "active": true,
-          "boost": 3.2
+          "boost": 2
         },
         {
           "name": "Keywords",
           "active": true,
-          "boost": 0
+          "boost": 3
         }
       ]
     }
