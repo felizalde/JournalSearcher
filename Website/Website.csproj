@@ -14,7 +14,7 @@
 		<!-- Set this to true if you enable server-side prerendering -->
 		<BuildServerSideRenderer>false</BuildServerSideRenderer>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<DocumentationFile>C:\Users\efeal\source\repos\JournalSearcher\Website\WebAPI.xml</DocumentationFile>
+		<DocumentationFile>C:\Users\coloe\Projects\JournalSearcher\Website\WebAPI.xml</DocumentationFile>
 		<UserSecretsId>84b7c975-d1c7-4aa9-bcd1-e59c1bd2421b</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>

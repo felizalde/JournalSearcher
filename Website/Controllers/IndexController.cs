@@ -26,12 +26,10 @@ public class IndexController : ControllerBase
 
     [HttpPost("fill")]
     [Authorize(Roles = ApplicationRoles.ADMIN)]
-    public async Task<IActionResult> FillIndex([FromQuery] int version)
+    public async Task<IActionResult> FillIndex([FromQuery] int version, [FromQuery] string editorial, [FromQuery] string IndexName)
     {
-        //await searcher.CleanIndexAsync();
-
-        var journals = data.GetAllJournals(version);
-
+        var journals = data.GetAllJournals(version, editorial);
+        searcher.SetIndex(IndexName);
         await searcher.InsertManyAsync(journals);
 
         return Ok(new { Result = "Data successfully registered with Elasticsearch" });
@@ -39,8 +37,9 @@ public class IndexController : ControllerBase
 
     [HttpPost("create")]
     [Authorize(Roles = ApplicationRoles.ADMIN)]
-    public async Task<IActionResult> CreateIndex()
+    public async Task<IActionResult> CreateIndex(string IndexName)
     {
+        searcher.SetIndex(IndexName);
         await searcher.CreateIndexAsync();
 
         return Ok(new { Result = "Index created sucessfully." });

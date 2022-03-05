@@ -10,6 +10,12 @@ public class JournalSearcher : IJournalSearcher<JournalDocument>
 {
     private readonly IJournalsRepository<JournalDocument> repository;
 
+    public void SetIndex(string index)
+    {
+        if (string.IsNullOrEmpty(index)) return;
+        repository.IndexName = index;
+    }
+
     public JournalSearcher(IJournalsRepository<JournalDocument> repository)
     {
         this.repository = repository;
