@@ -9,7 +9,7 @@ public abstract class ElasticBaseRepository<T> : IElasticBaseRepository<T> where
 {
     private readonly IElasticClient _elasticClient;
 
-    public abstract string IndexName { get; }
+    public abstract string IndexName { get; set; }
 
     protected ElasticBaseRepository(IElasticClient elasticClient)
     {

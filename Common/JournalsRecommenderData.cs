@@ -65,17 +65,18 @@ public class JournalsRecommenderData
     }
 
 
-    public IEnumerable<Journal> GetAllJournals(int version = 1)
+    public IEnumerable<Journal> GetAllJournals(int version = 1, string editorial = null)
     {
         try
         {
             var mapped = new Dictionary<Guid, Journal>();
-
+            var query = string.IsNullOrEmpty(editorial) ? @"SELECT * FROM journal 
+                        LEFT JOIN journal_metrics on journal.id = journal_metrics.journalid
+                        WHERE version = @version" : @"SELECT * FROM journal 
+                        LEFT JOIN journal_metrics on journal.id = journal_metrics.journalid
+                        WHERE version = @version and editorial = @editorial";
             var conn = Connection;
-            string editorial = "Springer";
-            var journals = conn.Query<Journal, JournalMetric, Journal>(@"SELECT * FROM journal 
-                                                     LEFT JOIN journal_metrics on journal.id = journal_metrics.journalid
-                                                     WHERE version = @version and editorial=@editorial", (journal, metric) =>
+            var journals = conn.Query<Journal, JournalMetric, Journal>(query, (journal, metric) =>
                                                                        {
                                                                            if (!mapped.TryGetValue(journal.Id, out Journal toMap))
                                                                            {
