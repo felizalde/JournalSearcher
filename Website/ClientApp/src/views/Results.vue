@@ -10,7 +10,7 @@
           </div>
         </div>
 
-        <ResultItem v-for="(r, i) in results" :key="i" :result="r"/>
+        <ResultItem v-for="(r, i) in results" :key="i" :result="r" :position="i + 1"/>
       </el-col>
     </el-row>
   </div>
