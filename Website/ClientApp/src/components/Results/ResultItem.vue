@@ -41,6 +41,9 @@
             </div>
           </div>
         </div>
+        <div class="result-item-position">
+          <div>#{{ position }}</div>
+        </div>
       </div>
     </div>
   </el-card>
@@ -62,6 +65,10 @@ export default defineComponent({
       type: Object as PropType<IResult>,
       required: true,
     },
+    position: {
+      type: Number,
+      required: true
+    }
   },
   setup(props) {
     const format = (metric: string, value: number) => FormatMetricValue(metric, value);
@@ -107,7 +114,7 @@ export default defineComponent({
 }
 
 .result-item-metrics {
-  height: 100%;
+  height: 75%;
 }
 
 .result-item-content {
@@ -179,5 +186,16 @@ export default defineComponent({
     flex-direction: column;
     flex-wrap: wrap;
     align-content: space-between;
+}
+
+.result-item-position {
+  font-size: 0.9rem;
+  font-weight: bold;
+  font-style: italic;
+  width: 100%;
+}
+
+.result-item-position > div {
+  text-align: right;
 }
 </style>
