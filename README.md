@@ -52,7 +52,6 @@ docker cp SRC_FILE pgadmin_container:/tmp/JournalsRecommender.backup
 |---|---|---|
 | efealde@gmail.com  |  Riquelme1. | Admin  |
 | nicoleiva08@gmail.com  |  Riquelme1. | Admin  |
-| diegoalonso1709@gmail.com  |  Riquelme1. | Admin  |
 | guest1@jr10.com  |  Riquelme1. | User  |
 | guest2@jr10.com  |  Riquelme1. | User  |
 
